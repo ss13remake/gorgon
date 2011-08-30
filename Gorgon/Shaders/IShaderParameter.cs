@@ -244,31 +244,17 @@ namespace GorgonLibrary.Graphics
 		/// <param name="value">An array of 4D vector values.</param>
 		void SetValue(Vector4D[] value);
 
-		/// <summary>
-		/// Function to set a matrix value.
-		/// </summary>
-		/// <param name="value">A matrix value.</param>
-		void SetValue(Matrix value);
+        /// <summary>
+        /// Function to set an array of matrix values.
+        /// </summary>
+        /// <param name="value">An array of matrix values.</param>
+        void SetValue(Matrix value);
 
-		/// <summary>
-		/// Function to set an array of matrix values.
-		/// </summary>
-		/// <param name="value">An array of matrix values.</param>
+        /// <summary>
+        /// Function to set an array of matrix values.
+        /// </summary>
+        /// <param name="value">An array of matrix values.</param>
 		void SetValue(Matrix[] value);
-
-		/// <summary>
-		/// Function to set a matrix value with option for transposed matrix.
-		/// </summary>
-		/// <param name="value">A matrix value.</param>
-		/// <param name="transpose">TRUE to use transpose of the matrix, FALSE for standard matrix.</param>
-		void SetValue(Matrix value, bool transpose);
-
-		/// <summary>
-		/// Function to set a matrix value with option for transposed matrix.
-		/// </summary>
-		/// <param name="value">An array of matrix values.</param>
-		/// <param name="transpose">TRUE to use transpose of the matrix, FALSE for standard matrix.</param>
-		void SetValue(Matrix[] value, bool transpose);
 
 		/// <summary>
 		/// Function to set a color parameter value
