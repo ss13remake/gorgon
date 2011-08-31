@@ -675,6 +675,23 @@ namespace GorgonLibrary.Internal
 			return new DX.Vector2(vector.X, vector.Y);
 		}
 
+        /// <summary>
+        /// Function to convert an array of Gorgon 2D vectors into an array of D3D 2D vectors.
+        /// </summary>
+        /// <param name="vector">Gorgon vectors to convert.</param>
+        /// <returns>D3D 2D vectors.</returns>
+        public static DX.Vector2[] Convert(Vector2D[] vector)
+        {
+            DX.Vector2[] vectors = new SlimDX.Vector2[vector.Length];	// Create vector array.
+
+            // Copy.
+            for (int i = 0; i < vector.Length; i++)
+                vectors[i] = Convert(vector[i]);
+
+            // Send the array back.
+            return vectors;
+        }
+
 		/// <summary>
 		/// Function to convert a D3D 3D vector into a Gorgon 3D vector.
 		/// </summary>

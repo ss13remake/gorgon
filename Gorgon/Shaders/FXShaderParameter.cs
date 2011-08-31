@@ -450,23 +450,41 @@ namespace GorgonLibrary.Graphics
 			_owner.D3DEffect.SetString(_effectHandle, value);
 		}
 
-		/// <summary>
-		/// Function to set a 4D vector parameter value.
-		/// </summary>
-		/// <param name="value">A 4D vector value.</param>
-		public void SetValue(Vector4D value)
-		{
-			_owner.D3DEffect.SetValue(_effectHandle, Converter.Convert(value));
-		}
+        /// <summary>
+        /// Function to set a 4D vector parameter value.
+        /// </summary>
+        /// <param name="value">A 4D vector value.</param>
+        public void SetValue(Vector4D value)
+        {
+            _owner.D3DEffect.SetValue(_effectHandle, Converter.Convert(value));
+        }
 
-		/// <summary>
-		/// Function to set a 4D vector parameter array value.
-		/// </summary>
-		/// <param name="value">An array of 4D vector values.</param>
-		public void SetValue(Vector4D[] value)
-		{
-			_owner.D3DEffect.SetValue(_effectHandle, Converter.Convert(value));
-		}
+        /// <summary>
+        /// Function to set a 4D vector parameter array value.
+        /// </summary>
+        /// <param name="value">An array of 4D vector values.</param>
+        public void SetValue(Vector4D[] value)
+        {
+            _owner.D3DEffect.SetValue(_effectHandle, Converter.Convert(value));
+        }		
+        
+        /// <summary>
+        /// Function to set a 2D vector parameter value.
+        /// </summary>
+        /// <param name="value">A 2D vector value.</param>
+        public void SetValue(Vector2D value)
+        {
+            _owner.D3DEffect.SetValue(_effectHandle, Converter.Convert(value));
+        }
+
+        /// <summary>
+        /// Function to set a 2D vector parameter array value.
+        /// </summary>
+        /// <param name="value">An array of 2D vector values.</param>
+        public void SetValue(Vector2D[] value)
+        {
+            _owner.D3DEffect.SetValue(_effectHandle, Converter.Convert(value));
+        }
 
 		/// <summary>
 		/// Function to set a matrix value.
