@@ -333,7 +333,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to perform the actual drawing on the target.
 		/// </summary>
 		/// <param name="vertices">Vertices to draw.</param>
-		private void Draw(VertexTypeList.PositionDiffuse2DTexture1[] vertices)
+		public void Draw(VertexTypeList.PositionDiffuse2DTexture1[] vertices)
 		{
 			SpriteStateCache manager = null;	// State manager.
 			int count = 0;						// Vertex count.
