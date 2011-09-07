@@ -1324,7 +1324,7 @@ namespace GorgonLibrary
 
 				logPath += Assembly.GetExecutingAssembly().GetName().Name + "_" + Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
-				_log = new Logger(Assembly.GetEntryAssembly().GetName().Name, logPath);
+                _log = new Logger(Process.GetCurrentProcess().ProcessName, logPath);
 				// Set this to intermediate, simple or none to have a smaller log file.
 #if DEBUG
 				_log.LogFilterLevel = LoggingLevel.Verbose;
