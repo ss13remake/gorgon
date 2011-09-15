@@ -96,7 +96,7 @@ namespace GorgonLibrary.GUI
 		/// Function to remove a GUI panel from the collection.
 		/// </summary>
 		/// <param name="panel">GUI panel to remove.</param>
-		internal void Remove(GUIWindow panel)
+		public void Remove(GUIWindow panel)
 		{
 			if (panel == null)
 				throw new ArgumentNullException("panel");
