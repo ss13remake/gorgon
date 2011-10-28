@@ -23,6 +23,7 @@ namespace AtlasTool
         private List<Image> _atlasImages = new List<Image>();					// Atlas images.
         private int _currentIndex = -1;								// Current image.
         private Size usedSize = new Size(0,0);
+        private int usedPixels = 0;
         private bool iterating = false;
         
 
@@ -126,10 +127,31 @@ namespace AtlasTool
             }
             LoadTextures();
             GenerateAtlas(_images.Keys.ToList());
-            if (usedSize.Width < _atlasSize.Width / 2 && usedSize.Height < _atlasSize.Height / 2)
+            
+            if (usedPixels < (_atlasSize.Height * _atlasSize.Width) / Math.Sqrt(2) || (usedSize.Width < _atlasSize.Width / 2 || usedSize.Height < _atlasSize.Height / 2) && _atlasImages.Count < 2)
             {
-                _atlasSize.Width = _atlasSize.Width / 2;
-                _atlasSize.Height = _atlasSize.Height / 2;
+
+                if (usedSize.Width < _atlasSize.Width / 4)
+                    _atlasSize.Width = _atlasSize.Width / 4;
+                else if (usedSize.Width < _atlasSize.Width / 3)
+                    _atlasSize.Width = _atlasSize.Width / 3;
+                else if (usedSize.Width < _atlasSize.Width / 2)
+                    _atlasSize.Width = _atlasSize.Width / 2;
+
+                if (usedSize.Height < _atlasSize.Height / 4)
+                    _atlasSize.Height = _atlasSize.Height / 4;
+                else if (usedSize.Height < _atlasSize.Height / 3)
+                    _atlasSize.Height = _atlasSize.Height / 3;
+                else if (usedSize.Height < _atlasSize.Height / 2)
+                    _atlasSize.Height = _atlasSize.Height / 2;
+                if (usedPixels < (_atlasSize.Height * _atlasSize.Width) / Math.Sqrt(2))
+                {
+                    _atlasSize.Width = (int)(_atlasSize.Width * (1 / Math.Sqrt(2)));
+                    _atlasSize.Height = (int)(_atlasSize.Height * (1 / Math.Sqrt(2)));
+
+                }
+                
+
                 ClearVariables();
                 Console.WriteLine("Atlas is much larger than input, reducing atlas size to " + _atlasSize.Width.ToString() + "x" + _atlasSize.Height.ToString());
                 iterating = true;
@@ -219,8 +241,9 @@ AtlasTool.exe -o atlasname <texpath>
                     try
                     {
                         Image image = _images[images[0]];		// Get image.
-
-                        newPosition = tree.Add(images[0], new Size(image.Width + _paddingPixels, image.Height + _paddingPixels));
+                        Size addSize = new Size(image.Width + _paddingPixels, image.Height + _paddingPixels);
+                        newPosition = tree.Add(images[0], addSize);
+                        usedPixels += addSize.Width * addSize.Height;
                         if (newPosition != Rectangle.Empty)
                         {
                             if (newPosition.Right > usedSize.Width)
@@ -243,7 +266,7 @@ AtlasTool.exe -o atlasname <texpath>
                                 _atlasImages.Add(atlas);
                         }
                     }
-                    catch (OverflowException ex)
+                    catch (Exception ex)
                     {
                         //UI.ErrorBox(this, "The image '" + images[0] + "' is too large to fit into the constraints of the image.\nImage will be removed from the list.");
                         Console.WriteLine("The image '" + images[0] + "' is too large to fit into the constraints of the image.\nImage will be removed from the list.", ex.ToString());
