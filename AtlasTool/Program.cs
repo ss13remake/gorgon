@@ -5,6 +5,7 @@ using System.Text;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Globalization;
 
 namespace AtlasTool
 {
@@ -341,8 +342,8 @@ AtlasTool.exe -o atlasname <texpath>
                 {
                     string line = string.Empty;
 
-                    line = item.SourceName + "\t\t" + item.Destination + ", 0, 2D, " + item.ScaledRect.X.ToString("0.000000") + ", " +
-                                item.ScaledRect.Y.ToString("0.000000") + ", 0.000000, " + item.ScaledRect.Width.ToString("0.000000") + ", " + item.ScaledRect.Height.ToString("0.000000");
+                    line = item.SourceName + "\t\t" + item.Destination + ", 0, 2D, " + item.ScaledRect.X.ToString("0.000000", CultureInfo.InvariantCulture) + ", " +
+                                item.ScaledRect.Y.ToString("0.000000", CultureInfo.InvariantCulture) + ", 0.000000, " + item.ScaledRect.Width.ToString("0.000000", CultureInfo.InvariantCulture) + ", " + item.ScaledRect.Height.ToString("0.000000", CultureInfo.InvariantCulture);
 
                     writer.WriteLine(line);
                 }
