@@ -1150,6 +1150,21 @@ namespace GorgonLibrary.Graphics
 			EndRendering(flush);
 		}
 
+        /// <summary>
+        /// Function to draw the sprite.
+        /// </summary>
+        /// <param name="dimensions">Dimensions of the sprite while drawing.</param>
+        public void Draw(Drawing.Rectangle dimensions)
+        {
+            Vector2D prevPos = this.Position;
+            Vector2D prevDim = this.ScaledDimensions;
+            this.Position = dimensions.Location;
+            this.ScaledDimensions = dimensions.Size;
+            this.Draw();
+            this.Position = prevPos;
+            this.ScaledDimensions = prevDim;
+        }
+
 		/// <summary>
 		/// Creates a new object that is a copy of the current instance.
 		/// </summary>
