@@ -17,15 +17,21 @@ namespace AtlasTool
         string inputDir;
         List<int> checkedArgs = new List<int>();
         Dictionary<string, Image> _images = new Dictionary<string, Image>();
+        List<Image> _sortedImages = new List<Image>();
+        List<string> _sortedImageNames = new List<string>();
         List<string> _imageNames = new List<string>();
-        Size _atlasSize = new Size(4096, 4096);
+        Size _maxAtlasSize = new Size(2048, 2048);
+        Size _atlasSize;
+        Size _minSize = new Size(0, 0);
         int _paddingPixels = 1;
         private List<ImageData> _imageData = new List<ImageData>();					// Image data.
         private List<Image> _atlasImages = new List<Image>();					// Atlas images.
         private int _currentIndex = -1;								// Current image.
         private Size usedSize = new Size(0,0);
         private int usedPixels = 0;
+        private double usedPixelCoefficient = 10;
         private bool iterating = false;
+        bool final = false;
         
 
 
@@ -43,6 +49,7 @@ namespace AtlasTool
             _atlasImages = new List<Image>();					// Atlas images.
             _currentIndex = -1;								// Current image.
             usedSize = new Size(0,0);
+            usedPixels = 0;
         }
 
         public void ParseArgs(string[] _args)
@@ -93,6 +100,7 @@ namespace AtlasTool
             }
             else
             {
+                _atlasSize = _maxAtlasSize;
                 Execute();
             }
         }
@@ -127,36 +135,66 @@ namespace AtlasTool
                 Console.WriteLine("Starting Atlas.");
             }
             LoadTextures();
-            GenerateAtlas(_images.Keys.ToList());
-            
-            if (usedPixels < (_atlasSize.Height * _atlasSize.Width) / Math.Sqrt(2) || (usedSize.Width < _atlasSize.Width / 2 || usedSize.Height < _atlasSize.Height / 2) && _atlasImages.Count < 2)
+            GenerateAtlas();
+
+            int unUsedPixels = (_atlasSize.Height * _atlasSize.Width) - usedPixels;
+
+            if ((unUsedPixels > (usedPixels / usedPixelCoefficient) || (usedSize.Width < _atlasSize.Width / 2 || usedSize.Height < _atlasSize.Height / 2)) && _atlasImages.Count < 2 && !final)
             {
 
-                if (usedSize.Width < _atlasSize.Width / 4)
-                    _atlasSize.Width = _atlasSize.Width / 4;
-                else if (usedSize.Width < _atlasSize.Width / 3)
-                    _atlasSize.Width = _atlasSize.Width / 3;
-                else if (usedSize.Width < _atlasSize.Width / 2)
-                    _atlasSize.Width = _atlasSize.Width / 2;
-
-                if (usedSize.Height < _atlasSize.Height / 4)
-                    _atlasSize.Height = _atlasSize.Height / 4;
-                else if (usedSize.Height < _atlasSize.Height / 3)
-                    _atlasSize.Height = _atlasSize.Height / 3;
-                else if (usedSize.Height < _atlasSize.Height / 2)
-                    _atlasSize.Height = _atlasSize.Height / 2;
-                if (usedPixels < (_atlasSize.Height * _atlasSize.Width) / Math.Sqrt(2))
+                if ((usedSize.Width < _atlasSize.Width - 1 || usedSize.Height < _atlasSize.Height - 1))
+                {
+                    _atlasSize.Width = (int)Math.Ceiling((double)_atlasSize.Width * ((double)usedSize.Width / (double)_atlasSize.Width)) + 1;
+                    _atlasSize.Height = (int)Math.Ceiling((double)_atlasSize.Height * ((double)usedSize.Height / (double)_atlasSize.Height)) + 1;
+                    /*if (usedSize.Width < _atlasSize.Width / 4)
+                        _atlasSize.Width = _atlasSize.Width / 4;
+                    else if (usedSize.Width < _atlasSize.Width / 3)
+                        _atlasSize.Width = _atlasSize.Width / 3;
+                    else if (usedSize.Width < _atlasSize.Width / 2)
+                        _atlasSize.Width = _atlasSize.Width / 2;
+                    
+                    if (usedSize.Height < _atlasSize.Height / 4)
+                        _atlasSize.Height = _atlasSize.Height / 4;
+                    else if (usedSize.Height < _atlasSize.Height / 3)
+                        _atlasSize.Height = _atlasSize.Height / 3;
+                    else if (usedSize.Height < _atlasSize.Height / 2)
+                        _atlasSize.Height = _atlasSize.Height / 2;*/
+                }
+                /*else if (usedPixels < (_atlasSize.Height * _atlasSize.Width) / Math.Sqrt(2))
                 {
                     _atlasSize.Width = (int)(_atlasSize.Width * (1 / Math.Sqrt(2)));
                     _atlasSize.Height = (int)(_atlasSize.Height * (1 / Math.Sqrt(2)));
 
+                }*/
+                if (unUsedPixels > (usedPixels / usedPixelCoefficient))
+                {
+                    _atlasSize.Width = (int)Math.Floor(_atlasSize.Width - Math.Sqrt(usedPixels / usedPixelCoefficient) / 2);
+                    _atlasSize.Height = (int)Math.Floor(_atlasSize.Height - Math.Sqrt(usedPixels / usedPixelCoefficient) / 2);
+                    usedPixelCoefficient *= 1.5;
                 }
-                
+
+                if (_atlasSize.Height < _minSize.Height)
+                    _atlasSize.Height = _minSize.Height + 1;
+                if (_atlasSize.Width < _minSize.Width)
+                    _atlasSize.Width = _minSize.Width + 1;
 
                 ClearVariables();
                 Console.WriteLine("Atlas is much larger than input, reducing atlas size to " + _atlasSize.Width.ToString() + "x" + _atlasSize.Height.ToString());
                 iterating = true;
                 Execute();                
+            }
+            else if (_atlasImages.Count >= 2 && usedPixelCoefficient > 10 && !final)
+            {
+                usedPixelCoefficient /= 1.5;
+                if (_atlasSize.Width > _minSize.Width + 1)
+                    _atlasSize.Width = (int)Math.Ceiling(_atlasSize.Width + Math.Sqrt(usedPixels / usedPixelCoefficient) / 2);
+                if (_atlasSize.Height > _minSize.Height + 1)
+                    _atlasSize.Height = (int)Math.Ceiling(_atlasSize.Height + Math.Sqrt(usedPixels / usedPixelCoefficient) / 2);
+                ClearVariables();
+                final = true;
+                iterating = true;
+                Console.WriteLine("Made atlas too small, backing out to previous size: " + _atlasSize.Width.ToString() + "x" + _atlasSize.Height.ToString());
+                Execute();
             }
             else
                 SaveAtlas();
@@ -173,6 +211,19 @@ namespace AtlasTool
             }
             if(!iterating)
                 Console.WriteLine(_images.Count.ToString() + " images loaded.");
+
+            SortTextures();
+        }
+
+        /// <summary>
+        /// Sort textures by size in descending order.
+        /// </summary>
+        public void SortTextures()
+        {
+            _sortedImageNames = (from i in _images
+                                                             orderby i.Value.Height * i.Value.Width descending
+                                                             select i.Key).ToList();
+            _minSize = new Size(_images[_sortedImageNames[0]].Width, _images[_sortedImageNames[0]].Height);
         }
 
         public void PrintHelp(string error = "")
@@ -196,7 +247,7 @@ AtlasTool.exe -o atlasname <texpath>
         /// Function to generate the atlas.
         /// </summary>
         /// <param name="images">List of images to use as a source for an atlas image.</param>
-        private void GenerateAtlas(List<string> sourceImages)
+        private void GenerateAtlas()
         {
             ImageTree tree = null;			// Image tree.
             Rectangle newPosition;			// New rectangle.
@@ -212,6 +263,9 @@ AtlasTool.exe -o atlasname <texpath>
                 if (_images.Count < 1)
                     return;
 
+                //Sort Images.
+                
+
                 /*Settings.Root = "AtlasSettings";
                 _atlasSize.Width = Convert.ToInt32(Settings.GetSetting("MaxWidth", "4096"));
                 _atlasSize.Height = Convert.ToInt32(Settings.GetSetting("MaxHeight", "4096"));
@@ -224,8 +278,11 @@ AtlasTool.exe -o atlasname <texpath>
                 // Begin adding to the image tree.
                 tree = new ImageTree(_atlasSize);
 
+                int currentIndex = 0;
+                int firstSkipped = 0;
+
                 images = new List<string>();
-                foreach (string imageName in sourceImages)
+                foreach (string imageName in _sortedImageNames)
                     images.Add(imageName);
 
                 // Add to tree.
@@ -241,12 +298,15 @@ AtlasTool.exe -o atlasname <texpath>
                 {
                     try
                     {
-                        Image image = _images[images[0]];		// Get image.
+                        if (currentIndex >= images.Count)
+                            currentIndex = 0;
+                        Image image = _images[images[currentIndex]];		// Get image.
                         Size addSize = new Size(image.Width + _paddingPixels, image.Height + _paddingPixels);
-                        newPosition = tree.Add(images[0], addSize);
-                        usedPixels += addSize.Width * addSize.Height;
+                        newPosition = tree.Add(images[currentIndex], addSize);
                         if (newPosition != Rectangle.Empty)
                         {
+                            usedPixels += addSize.Width * addSize.Height;
+
                             if (newPosition.Right > usedSize.Width)
                                 usedSize.Width = newPosition.Right;
                             if (newPosition.Bottom > usedSize.Height)
@@ -256,42 +316,49 @@ AtlasTool.exe -o atlasname <texpath>
                             // Convert to data structure.
                             data = new ImageData();
                             data.Destination = string.Empty;
-                            data.SourceName = images[0];
+                            data.SourceName = images[currentIndex];
                             data.AtlasImage = atlas;
                             data.ScaledRect = new RectangleF((float)newPosition.X / (float)atlas.Width, (float)newPosition.Y / (float)atlas.Height,
                                         (float)(newPosition.Width - _paddingPixels) / (float)atlas.Width, (float)(newPosition.Height - _paddingPixels) / (float)atlas.Height);
 
                             _imageData.Add(data);
-                            _imageNames.Remove(images[0]);
                             if (!_atlasImages.Contains(atlas))
                                 _atlasImages.Add(atlas);
+                        }
+                        else
+                        {
+                            if (currentIndex == images.Count - 1) // Make a new atlas and reset counter to 0.
+                            {
+                                // Reset.
+                                atlas = new Bitmap(_atlasSize.Width, _atlasSize.Height, PixelFormat.Format32bppArgb);
+
+                                // make a new image tree
+                                tree = new ImageTree(_atlasSize);
+
+                                g = Graphics.FromImage(atlas);
+                                g.Clear(Color.FromArgb(0, 0, 0, 0));
+
+                                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
+                                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                                g.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
+
+                                currentIndex = 0;
+                            }
+                            else // skip the current image
+                            { 
+                                currentIndex++; 
+                            }
+
+                            continue;
                         }
                     }
                     catch (Exception ex)
                     {
-                        //UI.ErrorBox(this, "The image '" + images[0] + "' is too large to fit into the constraints of the image.\nImage will be removed from the list.");
-                        Console.WriteLine("The image '" + images[0] + "' is too large to fit into the constraints of the image.\nImage will be removed from the list.", ex.ToString());
-                        _imageNames.Remove(images[0]);
+                        Console.WriteLine("The image '" + images[currentIndex] + "' is too large to fit into the constraints of the image.\nImage will be removed from the list.", ex.ToString());
                     }
 
-                    images.RemoveAt(0);
+                    images.RemoveAt(currentIndex);
                 }
-
-                /*//Redraw the atlas into the smallest png that will fit.
-                Image tempAtlas = new Bitmap(usedSize.Width, usedSize.Height, PixelFormat.Format32bppArgb);
-
-                g = Graphics.FromImage(tempAtlas);
-                g.Clear(Color.FromArgb(0, 0, 0, 0));
-
-                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-                g.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
-
-                g.DrawImageUnscaled(atlas, new Point(0, 0));
-
-                atlas = tempAtlas;
-                _atlasSize = usedSize;
-                */
 
                 if (_currentIndex == -1)
                     _currentIndex = 0;
