@@ -29,7 +29,8 @@ namespace AtlasTool
         private int _currentIndex = -1;								// Current image.
         private Size usedSize = new Size(0,0);
         private int usedPixels = 0;
-        private double usedPixelCoefficient = 10;
+        private double usedPixelCoefficient = 0;
+        private float usedPixelCoefficientIncrement = 1.5f;
         private bool iterating = false;
         bool final = false;
         
@@ -139,39 +140,18 @@ namespace AtlasTool
 
             int unUsedPixels = (_atlasSize.Height * _atlasSize.Width) - usedPixels;
 
-            if ((unUsedPixels > (usedPixels / usedPixelCoefficient) || (usedSize.Width < _atlasSize.Width / 2 || usedSize.Height < _atlasSize.Height / 2)) && _atlasImages.Count < 2 && !final)
+            if ((unUsedPixels > (usedPixels * 0.01)/* || (usedSize.Width < _atlasSize.Width / 2 || usedSize.Height < _atlasSize.Height / 2)*/) && _atlasImages.Count < 2 && !final)
             {
 
-                if ((usedSize.Width < _atlasSize.Width - 1 || usedSize.Height < _atlasSize.Height - 1))
+                /*if ((usedSize.Width < _atlasSize.Width - 1 || usedSize.Height < _atlasSize.Height - 1)) // If there's whitespace along the edges
                 {
                     _atlasSize.Width = (int)Math.Ceiling((double)_atlasSize.Width * ((double)usedSize.Width / (double)_atlasSize.Width)) + 1;
                     _atlasSize.Height = (int)Math.Ceiling((double)_atlasSize.Height * ((double)usedSize.Height / (double)_atlasSize.Height)) + 1;
-                    /*if (usedSize.Width < _atlasSize.Width / 4)
-                        _atlasSize.Width = _atlasSize.Width / 4;
-                    else if (usedSize.Width < _atlasSize.Width / 3)
-                        _atlasSize.Width = _atlasSize.Width / 3;
-                    else if (usedSize.Width < _atlasSize.Width / 2)
-                        _atlasSize.Width = _atlasSize.Width / 2;
-                    
-                    if (usedSize.Height < _atlasSize.Height / 4)
-                        _atlasSize.Height = _atlasSize.Height / 4;
-                    else if (usedSize.Height < _atlasSize.Height / 3)
-                        _atlasSize.Height = _atlasSize.Height / 3;
-                    else if (usedSize.Height < _atlasSize.Height / 2)
-                        _atlasSize.Height = _atlasSize.Height / 2;*/
-                }
-                /*else if (usedPixels < (_atlasSize.Height * _atlasSize.Width) / Math.Sqrt(2))
-                {
-                    _atlasSize.Width = (int)(_atlasSize.Width * (1 / Math.Sqrt(2)));
-                    _atlasSize.Height = (int)(_atlasSize.Height * (1 / Math.Sqrt(2)));
-
                 }*/
-                if (unUsedPixels > (usedPixels / usedPixelCoefficient))
-                {
-                    _atlasSize.Width = (int)Math.Floor(_atlasSize.Width - Math.Sqrt(usedPixels / usedPixelCoefficient) / 2);
-                    _atlasSize.Height = (int)Math.Floor(_atlasSize.Height - Math.Sqrt(usedPixels / usedPixelCoefficient) / 2);
-                    usedPixelCoefficient *= 1.5;
-                }
+                usedPixelCoefficient = (usedPixelCoefficient + 0.1) * usedPixelCoefficientIncrement;
+                _atlasSize.Width = (int)Math.Floor(_maxAtlasSize.Width - Math.Sqrt(usedPixels * usedPixelCoefficient));
+                _atlasSize.Height = (int)Math.Floor(_maxAtlasSize.Height - Math.Sqrt(usedPixels * usedPixelCoefficient));
+              
 
                 if (_atlasSize.Height < _minSize.Height)
                     _atlasSize.Height = _minSize.Height + 1;
@@ -183,15 +163,22 @@ namespace AtlasTool
                 iterating = true;
                 Execute();                
             }
-            else if (_atlasImages.Count >= 2 && usedPixelCoefficient > 10 && !final)
+            else if (_atlasImages.Count >= 2 && usedPixelCoefficient > 0 && !final)
             {
-                usedPixelCoefficient /= 1.5;
-                if (_atlasSize.Width > _minSize.Width + 1)
-                    _atlasSize.Width = (int)Math.Ceiling(_atlasSize.Width + Math.Sqrt(usedPixels / usedPixelCoefficient) / 2);
-                if (_atlasSize.Height > _minSize.Height + 1)
-                    _atlasSize.Height = (int)Math.Ceiling(_atlasSize.Height + Math.Sqrt(usedPixels / usedPixelCoefficient) / 2);
+                usedPixelCoefficient = (usedPixelCoefficient / usedPixelCoefficientIncrement) - 0.1;
+                _atlasSize.Width = (int)Math.Ceiling(_maxAtlasSize.Width - Math.Sqrt(usedPixels * usedPixelCoefficient));
+                _atlasSize.Height = (int)Math.Ceiling(_maxAtlasSize.Height - Math.Sqrt(usedPixels * usedPixelCoefficient));
+
+                if (_atlasSize.Height < _minSize.Height)
+                    _atlasSize.Height = _minSize.Height + 1;
+                if (_atlasSize.Width < _minSize.Width)
+                    _atlasSize.Width = _minSize.Width + 1;
+
                 ClearVariables();
-                final = true;
+                if (usedPixelCoefficientIncrement <= 1.15f)
+                    final = true;
+                else
+                    usedPixelCoefficientIncrement -= 0.05f;
                 iterating = true;
                 Console.WriteLine("Made atlas too small, backing out to previous size: " + _atlasSize.Width.ToString() + "x" + _atlasSize.Height.ToString());
                 Execute();
