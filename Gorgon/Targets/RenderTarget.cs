@@ -858,6 +858,44 @@ namespace GorgonLibrary.Graphics
 			Draw(rectVertex);
 		}
 
+        /// <summary>
+        /// Function to draw a filled Triangle.
+        /// </summary>
+        /// <param name="pointOne">X & Y Coordinates of first corner.</param>
+        /// <param name="pointTwo">X & Y Coordinates of second corner.</param>
+        /// <param name="pointThree">X & Y Coordinates of third corner.</param>
+        /// <param name="color">Fill Color</param>
+        public void FilledTriangle(Vector2D pointOne, Vector2D pointTwo, Vector2D pointThree, Drawing.Color color)
+        {
+            // Vertex to represent the line.
+            VertexTypeList.PositionDiffuse2DTexture1[] lineVertex = new VertexTypeList.PositionDiffuse2DTexture1[3];
+
+            // Build end points.
+            lineVertex[0].Position = pointOne;
+            lineVertex[0].Position.Z = -PrimitiveDepth;
+            lineVertex[1].Position = pointTwo;
+            lineVertex[1].Position.Z = -PrimitiveDepth;
+            lineVertex[2].Position = pointThree;
+            lineVertex[2].Position.Z = -PrimitiveDepth;
+
+            lineVertex[0].ColorValue = color.ToArgb();
+            lineVertex[1].ColorValue = color.ToArgb();
+            lineVertex[2].ColorValue = color.ToArgb();
+
+            lineVertex[0].TextureCoordinates = Vector2D.Zero;
+            lineVertex[1].TextureCoordinates = Vector2D.Zero;
+            lineVertex[2].TextureCoordinates = Vector2D.Zero;
+
+            _useIndices = false;
+
+            // Set the current primitive style.
+            _currentPrimitiveStyle = PrimitiveStyle.TriangleList;
+            _useIndices = true;
+
+            // Send to the renderer.
+            Draw(lineVertex);
+        }
+
 		/// <summary>
 		/// Function to draw a filled rectangle.
 		/// </summary>
