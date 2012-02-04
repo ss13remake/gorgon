@@ -30,7 +30,7 @@ namespace AtlasTool
         private Size usedSize = new Size(0,0);
         private int usedPixels = 0;
         private double usedPixelCoefficient = 0;
-        private float usedPixelCoefficientIncrement = 1.5f;
+        private float usedPixelCoefficientIncrement = 1.8f;
         private bool iterating = false;
         bool final = false;
         
@@ -341,7 +341,7 @@ AtlasTool.exe -o atlasname <texpath>
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("The image '" + images[currentIndex] + "' is too large to fit into the constraints of the image.\nImage will be removed from the list.", ex.ToString());
+                        //Console.WriteLine("The image '" + images[currentIndex] + "' is too large to fit into the constraints of the image.\nImage will be removed from the list.", ex.ToString());
                     }
 
                     images.RemoveAt(currentIndex);
