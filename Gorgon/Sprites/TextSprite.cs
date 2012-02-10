@@ -26,11 +26,9 @@
 
 using System;
 using System.Collections.Specialized;
-using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using Drawing = System.Drawing;
-using GorgonLibrary;
 using GorgonLibrary.Internal;
 
 namespace GorgonLibrary.Graphics
@@ -514,7 +512,7 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         /// <param name="line">Line to read.</param>
         /// <returns>The length of the line in pixels.</returns>
-        private float MeasureLine(string line)
+        public float MeasureLine(string line)
         {
             float length = 0.0f;						// Length of the line.
             Glyph glyph;								// Glyph info.
