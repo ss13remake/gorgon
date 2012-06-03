@@ -64,4 +64,4 @@ using GorgonLibrary.PlugIns;
 //      Revision
 //
 [assembly: AssemblyVersion("1.1.*")]
-[assembly: AssemblyFileVersion("1.1.4119.34319")]
+[assembly: AssemblyFileVersion("1.1.4529.31450")]
