@@ -88,4 +88,4 @@ using System.Security.Permissions;
 //   (*) Delay Signing is an advanced option - see the Microsoft .NET Framework
 //       documentation for more information on this.
 //
-[assembly: AssemblyFileVersion("1.1.4119.34319")]
+[assembly: AssemblyFileVersion("1.1.4529.31450")]
