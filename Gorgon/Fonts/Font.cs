@@ -1025,13 +1025,13 @@ namespace GorgonLibrary.Graphics
 				if (_antiAlias)
 				{
 					g.TextContrast = 1;
-					g.TextRenderingHint = Drawing.Text.TextRenderingHint.AntiAlias;					
+                    g.TextRenderingHint = Drawing.Text.TextRenderingHint.AntiAlias;					
 
-					if (gdiFont.Size <= 18.0f)
-					{
-						g.TextContrast = 0;
-						g.TextRenderingHint = Drawing.Text.TextRenderingHint.AntiAliasGridFit;
-					}
+                    //if (gdiFont.Size <= 18.0f) Yeah no, let's not do that. Mostly because this doesn't actually work at all.
+                    //{
+                    //    g.TextContrast = 0;
+                    //    g.TextRenderingHint = Drawing.Text.TextRenderingHint.AntiAliasGridFit;
+                    //}
 				}
 				else
 				{
