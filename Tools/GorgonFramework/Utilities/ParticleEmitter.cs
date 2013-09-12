@@ -432,21 +432,38 @@ namespace GorgonLibrary.Graphics.Utilities
 		/// <param name="x">Horizontal Position.</param>
 		/// <param name="y">Vertical position.</param>
 		public void Move(float x, float y)
-		{
-			Vector2D delta = Vector2D.Zero;			// Delta
+        {
+            Vector2D delta = Vector2D.Zero;			// Delta
 
-			var aliveParticles = from particle in _particles
-								 where particle.Alive
-								 select particle;
+            var aliveParticles = from particle in _particles
+                                 where particle.Alive
+                                 select particle;
 
-			delta = Vector2D.Subtract(new Vector2D(x, y), Position);
+            delta = Vector2D.Subtract(new Vector2D(x, y), Position);
 
-			foreach (Particle particle in aliveParticles)
-				particle.Position = Vector2D.Add(particle.Position, delta);
+            foreach (Particle particle in aliveParticles)
+                particle.Position = Vector2D.Add(particle.Position, delta);
 
-			_previousPosition = Vector2D.Add(_previousPosition, delta);
+            _previousPosition = Vector2D.Add(_previousPosition, delta);
 			Position = new Vector2D(x, y);
 		}
+
+        /// <summary>
+        /// Function to move just the particles by an offset.
+        /// </summary>
+        /// <param name="x">Horizontal offset</param>
+        /// <param name="y">Vertical offset</param>
+        public void MoveParticles(float x, float y)
+        {
+            Vector2D delta = new Vector2D(x, y);			// Delta
+
+            var aliveParticles = from particle in _particles
+                                 where particle.Alive
+                                 select particle;
+
+            foreach (Particle particle in aliveParticles)
+                particle.Position = Vector2D.Add(particle.Position, delta);
+        }
 
 		/// <summary>
 		/// Function to update the particles.

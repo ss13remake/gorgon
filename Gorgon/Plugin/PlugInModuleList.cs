@@ -91,6 +91,8 @@ namespace GorgonLibrary.PlugIns
 				}
 				else
 				{
+                    if (string.Compare(assembly.ManifestModule.Name, "<In Memory Module>", true) == 0)
+                        continue;
 					if (string.Compare(assembly.ManifestModule.FullyQualifiedName, assemblyName, true) == 0)
 						return assembly;
 				}

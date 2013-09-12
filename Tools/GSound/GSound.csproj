@@ -32,11 +32,11 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\GSound.XML</DocumentationFile>
+    <DocumentationFile>..\bin\Release\GSound.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="csogg, Version=1.0.4529.31341, Culture=neutral, PublicKeyToken=c001d94e9acbbee7, processorArchitecture=MSIL">
