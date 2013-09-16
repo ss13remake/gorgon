@@ -2,7 +2,7 @@
 <GorgonSettings xmlns="http://tempuri.org/GorgonSettings.xsd">
   <Paths>
     <PathName>PlugInPath</PathName>
-    <Path>..\..\..\..\PlugIns\bin\Release</Path>
+    <Path>.</Path>
   </Paths>
   <InputPlugIns>
     <InputPlugInName>Gorgon.RawInput</InputPlugInName>

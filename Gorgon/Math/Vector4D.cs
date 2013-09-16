@@ -25,6 +25,8 @@
 #endregion
 
 using System;
+using System.ComponentModel;
+using System.Globalization;
 
 namespace GorgonLibrary
 {
@@ -36,6 +38,7 @@ namespace GorgonLibrary
 	/// spatial related computations.
 	/// This valuetype provides us a convienient way to use vectors and their operations.
 	/// </remarks>
+	[TypeConverterAttribute(typeof(Vector4DConverter))]
 	public struct Vector4D
 	{
 		#region Variables.
@@ -552,4 +555,75 @@ namespace GorgonLibrary
 		}
 		#endregion
 	}
+
+
+    public class Vector4DConverter : ExpandableObjectConverter
+    {
+        public override bool CanConvertTo(ITypeDescriptorContext context,
+                                  Type destinationType)
+        {
+            if (destinationType == typeof(Vector4D))
+                return true;
+
+            return base.CanConvertTo(context, destinationType);
+        }
+
+        public override object ConvertTo(ITypeDescriptorContext context,
+                               CultureInfo culture,
+                               object value,
+                               Type destinationType)
+        {
+            if (destinationType == typeof(System.String) &&
+                 value is Vector4D)
+            {
+
+                var v = (Vector4D)value;
+
+                return v.X + "," + v.Y + "," + v.Z + "," + v.W;
+            }
+            return base.ConvertTo(context, culture, value, destinationType);
+        }
+
+        public override bool CanConvertFrom(ITypeDescriptorContext context,
+                              Type sourceType)
+        {
+            if (sourceType == typeof(string))
+                return true;
+
+            return base.CanConvertFrom(context, sourceType);
+        }
+
+        public override object ConvertFrom(ITypeDescriptorContext context,
+                              CultureInfo culture, object value)
+        {
+            var value1 = value as string;
+            if (value1 != null)
+            {
+                try
+                {
+                    string s = value1;
+                    var values = s.Replace(" ", "").Split(',');
+                    if (values.Length < 2)
+                        throw new ArgumentException("Cannot convert '" + value1 + "' to type Vector4D. Value must be of the format 'x,y,z,w'");
+                    float x, y, z, w = 0;
+                    if (!float.TryParse(values[0], out x))
+                        throw new ArgumentException("Invalid x value '" + values[0] + "'");
+                    if (!float.TryParse(values[1], out y))
+                        throw new ArgumentException("Invalid y value '" + values[1] + "'");
+                    if (!float.TryParse(values[2], out z))
+                        throw new ArgumentException("Invalid z value '" + values[2] + "'");
+                    if (!float.TryParse(values[3], out w))
+                        throw new ArgumentException("Invalid w value '" + values[3] + "'");
+                    return new Vector4D(x, y, z, w);
+                }
+                catch (Exception e)
+                {
+                    throw new ArgumentException(
+                        "Can not convert '" + value1 +
+                        "' to type Vector4D", e);
+                }
+            }
+            return base.ConvertFrom(context, culture, value);
+        }
+    }
 }
